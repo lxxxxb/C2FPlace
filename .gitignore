@@ -1,0 +1,11 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Benchmark data (downloaded separately, see README)
+benchmark/
+
+# Experiment outputs
+results/
+results_experiments/
