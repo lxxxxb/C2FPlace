@@ -982,14 +982,14 @@ class C2FPlaceEA:
         return new_genotype, fitness, hpwl, overlap, congestion, phenotype, len(ripup_indices), candidate_count
 
     def _evolve_population(self, population, best_ever, best_hpwl_individual, hpwl_log_path, save_path, verbose, phase_prefix=""):
-        stage1_phase = f"{phase_prefix}_stage1" if phase_prefix else "stage1"
-        stage2_phase = f"{phase_prefix}_stage2" if phase_prefix else "stage2"
+        stage2_phase1 = f"{phase_prefix}_stage2_phase1" if phase_prefix else "stage2_phase1"
+        stage2_phase2 = f"{phase_prefix}_stage2_phase2" if phase_prefix else "stage2_phase2"
         stage3_phase = f"{phase_prefix}_stage3" if phase_prefix else "stage3"
 
         base_ripup_ratio = self.ripup_ratio
         stage1_ripup_ratio = base_ripup_ratio
 
-        # Stage 1: Global Exploration (ripup & replace with configured ratio)
+        # Stage 2 Phase 1: Global Exploration (ripup & replace with configured ratio)
         if verbose:
             if self.ripup_ratio_strategy == "random_stage":
                 schedule = "random [0.4,0.7]"
@@ -997,7 +997,7 @@ class C2FPlaceEA:
                 schedule = "decile_random [0.9,1.0] -> [0.0,0.1]"
             else:
                 schedule = f"fixed {stage1_ripup_ratio}"
-            print(f"\n=== Stage 1: Global Exploration ({self.stage1_iters} iters, ripup_ratio={schedule}) ===")
+            print(f"\n=== Stage 2 Phase 1: Global Exploration ({self.stage1_iters} iters, ripup_ratio={schedule}) ===")
         for iteration in range(self.stage1_iters):
             parent = self._tournament_select(population)
 
@@ -1034,7 +1034,7 @@ class C2FPlaceEA:
 
             self._append_hpwl_log(
                 hpwl_log_path,
-                stage1_phase,
+                stage2_phase1,
                 iteration + 1,
                 offspring,
                 best_hpwl_individual.hpwl,
@@ -1050,10 +1050,10 @@ class C2FPlaceEA:
 
         stage2_ripup_ratio = max(0.05, base_ripup_ratio * 0.5)
 
-        # Stage 2: Local Refinement (ripup & replace with smaller ratio)
+        # Stage 2 Phase 2: Local Refinement (ripup & replace with smaller ratio)
         if verbose:
             stage2_schedule = "random [0.1,0.4]" if self.ripup_ratio_strategy == "random_stage" else f"{stage2_ripup_ratio}"
-            print(f"\n=== Stage 2: Local Refinement ({self.stage2_iters} iters, ripup_ratio={stage2_schedule}) ===")
+            print(f"\n=== Stage 2 Phase 2: Local Refinement ({self.stage2_iters} iters, ripup_ratio={stage2_schedule}) ===")
         for iteration in range(self.stage2_iters):
             parent = self._tournament_select(population)
 
@@ -1084,7 +1084,7 @@ class C2FPlaceEA:
 
             self._append_hpwl_log(
                 hpwl_log_path,
-                stage2_phase,
+                stage2_phase2,
                 iteration + 1,
                 offspring,
                 best_hpwl_individual.hpwl,
@@ -1155,7 +1155,7 @@ class C2FPlaceEA:
         if hpwl_log_path:
             self._init_hpwl_log(hpwl_log_path)
         if verbose:
-            print("Initializing population...")
+            print(f"\n=== Stage 1: Initialization (pop_size={self.pop_size}) ===")
 
         best_ever = None
         best_hpwl_individual = None
@@ -1190,7 +1190,7 @@ class C2FPlaceEA:
                     if verbose:
                         print(f"  New best HPWL during init: HPWL={hpwl:.2e}, saved to: {saved_path}")
 
-            phase = "init_base" if len(population) == 1 else "init"
+            phase = "stage1_base" if len(population) == 1 else "stage1"
             self._append_hpwl_log(
                 hpwl_log_path,
                 phase,
@@ -1208,13 +1208,13 @@ class C2FPlaceEA:
         population.sort(key=lambda ind: ind.fitness, reverse=True)
 
         if verbose:
-            print(f"\nInitial best: fitness={best_ever.fitness:.2e}, hpwl={best_ever.hpwl:.2e}, overlap={best_ever.overlap:.2e}")
-            print(f"Initial best HPWL: hpwl={best_hpwl_individual.hpwl:.2e}, fitness={best_hpwl_individual.fitness:.2e}")
+            print(f"\nStage 1 best: fitness={best_ever.fitness:.2e}, hpwl={best_ever.hpwl:.2e}, overlap={best_ever.overlap:.2e}")
+            print(f"Stage 1 best HPWL: hpwl={best_hpwl_individual.hpwl:.2e}, fitness={best_hpwl_individual.fitness:.2e}")
 
         if save_path:
             saved_path = self._save_best_individual(best_hpwl_individual, save_path, self.placedb.benchmark)
-            self._append_hpwl_log(hpwl_log_path, "initial_best_hpwl", 0, best_hpwl_individual, best_hpwl_individual.hpwl, improved=True, saved_path=saved_path)
-            print(f"Initial best-HPWL placement saved to: {saved_path}")
+            self._append_hpwl_log(hpwl_log_path, "stage1_best_hpwl", 0, best_hpwl_individual, best_hpwl_individual.hpwl, improved=True, saved_path=saved_path)
+            print(f"Stage 1 best-HPWL placement saved to: {saved_path}")
 
         population, best_ever, best_hpwl_individual = self._evolve_population(
             population,
@@ -1232,8 +1232,8 @@ class C2FPlaceEA:
         """Run coarse displacement or fine-offset Stage 3 on one placement.
 
         ``genotype`` must use the engine's ``{node_id: (xc, yc, xf, yf)}``
-        representation.  This method intentionally does not perform Stage 1
-        or Stage 2, and is useful for refining a placement loaded from a
+        representation.  This method intentionally does not perform Stage 2
+        Phase 1 or Phase 2, and is useful for refining a placement loaded from a
         Bookshelf ``.pl`` file.
         """
         if iterations is None:
@@ -1405,7 +1405,7 @@ if __name__ == "__main__":
                         help="Shuffle macro placement order for each greedy initialization")
     parser.add_argument("--ripup_ratio_strategy", type=str, default="fixed",
                         choices=["fixed", "random_stage", "decile_random"],
-                        help="Rip-up ratio schedule; decile_random uses descending random bands during Stage 1")
+                        help="Rip-up ratio schedule; decile_random uses descending random bands during Stage 2 Phase 1")
     parser.add_argument("--tournament_size", type=int, default=5,
                             help="Size of the tournament for selection")
     parser.add_argument("--output", type=str, default=None, help="Output .pl file path")

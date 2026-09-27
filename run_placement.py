@@ -11,8 +11,8 @@ def main():
                         help="Benchmark directory name under benchmark/ (default: adaptec1; data must be downloaded separately)")
     parser.add_argument("--coarse_grid", type=int, default=256, help="Coarse grid size (default: 256)")
     parser.add_argument("--pop_size", type=int, default=20, help="Population size (default: 20)")
-    parser.add_argument("--stage1_iters", type=int, default=5000, help="Stage 1 iterations (default: 5000)")
-    parser.add_argument("--stage2_iters", type=int, default=5000, help="Stage 2 iterations (default: 5000)")
+    parser.add_argument("--stage1_iters", type=int, default=5000, help="Stage 2 Phase 1 iterations (default: 5000)")
+    parser.add_argument("--stage2_iters", type=int, default=5000, help="Stage 2 Phase 2 iterations (default: 5000)")
     parser.add_argument("--stage3_iters", type=int, default=50, help="Stage 3 iterations (default: 50)")
     parser.add_argument("--stage3_mode", type=str, default="both_2", choices=["coarse", "fine", "both_1", "both_2"],
                         help="Stage 3: both_1 runs all coarse iterations then all fine iterations; both_2 runs coarse then fine each iteration (default: both_2)")
@@ -31,7 +31,7 @@ def main():
                         help="Shuffle macro placement order for each greedy initialization")
     parser.add_argument("--ripup_ratio_strategy", type=str, default="fixed",
                         choices=["fixed", "random_stage", "decile_random"],
-                        help="Rip-up ratio schedule; decile_random samples [0.9,1.0] down to [0.0,0.1] across Stage 1")
+                        help="Rip-up ratio schedule; decile_random samples [0.9,1.0] down to [0.0,0.1] across Stage 2 Phase 1")
     parser.add_argument("--output", type=str, default=None, help="Output .pl file path")
     args = parser.parse_args()
 
@@ -46,8 +46,8 @@ def main():
     print(f"\n[2/4] Initializing C2FPlace-EA")
     print(f"  - Coarse grid size: {args.coarse_grid}x{args.coarse_grid}")
     print(f"  - Population size: {args.pop_size}")
-    print(f"  - Stage 1 iterations: {args.stage1_iters}")
-    print(f"  - Stage 2 iterations: {args.stage2_iters}")
+    print(f"  - Stage 2 Phase 1 iterations: {args.stage1_iters}")
+    print(f"  - Stage 2 Phase 2 iterations: {args.stage2_iters}")
     print(f"  - Stage 3 iterations: {args.stage3_iters}")
     print(f"  - Stage 3 mode: {args.stage3_mode}")
     print(f"  - Stage 3 order: {args.stage3_order}")
