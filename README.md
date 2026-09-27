@@ -57,49 +57,6 @@ Run placement on a single benchmark with default settings:
 python run_placement.py --benchmark adaptec1
 ```
 
-A typical full-configuration run:
-
-```bash
-python run_placement.py \
-    --benchmark adaptec1 \
-    --coarse_grid 512 \
-    --pop_size 20 \
-    --stage1_iters 5000 \
-    --stage2_iters 5000 \
-    --stage3_iters 50 \
-    --stage3_mode both_2 \
-    --stage3_order node_id \
-    --ripup_ratio 0.2 \
-    --ripup_strategy random \
-    --replace_order node_id \
-    --ripup_ratio_strategy random_stage \
-    --seed 42
-```
-
-Results (`.pl` files and HPWL history) are written to `results/<benchmark>/<config_tag>/seed<N>/`.
-
-### Key Arguments
-
-| Argument | Default | Description |
-|---|---|---|
-| `--benchmark` | `adaptec1` | Benchmark name under `benchmark/` |
-| `--coarse_grid` | `256` | Coarse grid size |
-| `--pop_size` | `20` | EA population size |
-| `--stage1_iters` / `--stage2_iters` | `5000` | Stage 2 Phase 1 / Phase 2 EA iterations |
-| `--stage3_iters` | `50` | Critical macro tuning iterations |
-| `--stage3_mode` | `both_2` | `coarse`, `fine`, `both_1`, `both_2` |
-| `--stage3_order` | `node_id` | Critical macro order: `hpwl`, `random`, `node_id` |
-| `--ripup_ratio` | `0.2` | Rip-up ratio for destruction-reconstruction (ignored when `--ripup_ratio_strategy random_stage`) |
-| `--ripup_strategy` | `random` | `random` or `bbox` |
-| `--replace_order` | `auto` | `auto`, `preserve`, `node_id`, `random`, `area_group` |
-| `--ripup_ratio_strategy` | `fixed` | `fixed`, `random_stage`, `decile_random` |
-| `--seed` | `42` | Random seed |
-| `--output` | auto | Output `.pl` file path |
-
-Run `python run_placement.py --help` for the full list.
-
-**Note on `--ripup_ratio_strategy random_stage`:** the `--ripup_ratio` value is **not used**. Instead, a fresh ratio is sampled every iteration — Stage 2 Phase 1 draws from **U(0.4, 0.7)** and Stage 2 Phase 2 from **U(0.1, 0.4)**. With `fixed`, Phase 1 uses `--ripup_ratio` and Phase 2 uses `max(0.05, ripup_ratio * 0.5)`.
-
 ## Batch Experiments
 
 `run_experiments.py` sweeps benchmarks and parameter grids, with optional parallelism:
