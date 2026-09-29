@@ -83,8 +83,7 @@ Useful flags: `--dry-run` (print commands only), `--continue-on-error`, `--resul
 ├── place_db.py         # Benchmark parser (.nodes/.nets/.pl/.scl)
 ├── evaluator.py        # HPWL / overlap / congestion evaluation (numba-accelerated)
 ├── run_placement.py    # Single-run entry point
-├── run_experiments.py  # Batch experiment runner
-└── tests/              # Unit tests
+└── run_experiments.py  # Batch experiment runner
 ```
 
 ## Citation
