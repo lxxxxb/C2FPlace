@@ -92,8 +92,13 @@ Useful flags: `--dry-run` (print commands only), `--continue-on-error`, `--resul
 If you find this work useful, please cite:
 
 ```bibtex
-@article{c2fplace,
-  title   = {Coarse-to-Fine Macro Placement via Evolutionary Search and Critical Macro Tuning},
-  note    = {Under review}
+@misc{liu2026coarsetofinemacroplacementevolutionary,
+      title={Coarse-to-Fine Macro Placement via Evolutionary Search and Critical Macro Tuning}, 
+      author={Biao Liu and Zhiping Jin and Kaixuan Sun and Zengrui Lu and Qingquan Zhang and Bo Yuan},
+      year={2026},
+      eprint={2609.34452},
+      archivePrefix={arXiv},
+      primaryClass={cs.AR},
+      url={https://arxiv.org/abs/2609.34452}, 
 }
 ```
